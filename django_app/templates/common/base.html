@@ -9,72 +9,80 @@
 <!doctype html>
 <html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport"
-	      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<link rel="stylesheet" href="{% static 'css/normalize.css' %}">
-	<link rel="stylesheet" href="{% static 'css/base.css' %}">
-	<link rel="stylesheet" href="{% static 'css/common.css' %}">
-	<link rel="stylesheet" href="{% static 'css/layout.css' %}">
-	<link rel="stylesheet" href="{% static 'css/post.css' %}">
-	<title>Instagram</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/post.css' %}">
+    <title>Instagram</title>
 </head>
 <body>
-	<div id="wrap">
-		<header class="top-header">
-			<nav>
-				<div class="nav-left nav-item">
-					<a href="{% url 'post:post_list' %}">
-						<img src="{% static 'images/logo.png' %}" alt="">
-					</a>
-				</div>
-				<div class="nav-center nav-item">
-					<input type="text" placeholder="검색">
-				</div>
-				<div class="nav-right nav-item">
-					<a href="#">
-						<img src="{% static 'images/icon_explore.png' %}" alt="">
-					</a>
-					<a href="#">
-						<img src="{% static 'images/icon_heart.png' %}" alt="">
-					</a>
-					<a href="#">
-						<img src="{% static 'images/icon_profile.png' %}" alt="">
-					</a>
-				</div>
-			</nav>
-			<nav>
-				<!--
-					로그인 되어있으면 <유저명>으로 로그인 중 표시
-					안되어있으면 a태그로 로그인창으로 이동할 수 있는 링크 추가
-				-->
-				<div>
-					{% if user.is_authenticated %}
-					<span>{{ user }}로 로그인 중</span>
-					<a href="{% url 'member:logout' %}" class="btn">로그아웃</a>
-					{% else %}
-					<form action="{% url 'member:login' %}" method="POST" class="form-inline-login">
-						{% csrf_token %}
-						<!--<label for="id-login-username">ID:</label>-->
-						<!--<input id="id-login-username" type="text" name="username">-->
-						<!--&nbsp;-->
-						<!--<label for="id-login-password">PW:</label>-->
-						<!--<input id="id-login-password" type="password" name="password">-->
-						{{ login_form }}
-						<button type="submit" class="btn">로그인</button>
-						<a href="{% url 'member:signup' %}" class="btn">회원가입</a>
-					</form>
-					<!--<a href="{% url 'member:login' %}" class="btn">로그인</a>-->
-					{% endif %}
-				</div>
-			</nav>
-		</header>
-		
-		<div class="container">
-			{% block content %}
-			{% endblock %}
-		</div>
-	</div>
+{% if messages %}
+    <div class="message">
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div id="wrap">
+    <header class="top-header">
+        <nav>
+            <div class="nav-left nav-item">
+                <a href="{% url 'post:post_list' %}">
+                    <img src="{% static 'images/logo.png' %}" alt="">
+                </a>
+            </div>
+            <div class="nav-center nav-item">
+                <input type="text" placeholder="검색">
+            </div>
+            <div class="nav-right nav-item">
+                <a href="#">
+                    <img src="{% static 'images/icon_explore.png' %}" alt="">
+                </a>
+                <a href="#">
+                    <img src="{% static 'images/icon_heart.png' %}" alt="">
+                </a>
+                <a href="#">
+                    <img src="{% static 'images/icon_profile.png' %}" alt="">
+                </a>
+            </div>
+        </nav>
+        <nav>
+            <!--
+                로그인 되어있으면 <유저명>으로 로그인 중 표시
+                안되어있으면 a태그로 로그인창으로 이동할 수 있는 링크 추가
+            -->
+            <div>
+                {% if user.is_authenticated %}
+                    <span>{{ user }}로 로그인 중</span>
+                    <a href="{% url 'member:logout' %}" class="btn">로그아웃</a>
+                {% else %}
+                    <form action="{% url 'member:login' %}" method="POST" class="form-inline-login">
+                        {% csrf_token %}
+                        <!--<label for="id-login-username">ID:</label>-->
+                        <!--<input id="id-login-username" type="text" name="username">-->
+                        <!--&nbsp;-->
+                        <!--<label for="id-login-password">PW:</label>-->
+                        <!--<input id="id-login-password" type="password" name="password">-->
+                        {{ login_form }}
+                        <button type="submit" class="btn">로그인</button>
+                        <a href="{% url 'member:signup' %}" class="btn">회원가입</a>
+                    </form>
+                    <!--<a href="{% url 'member:login' %}" class="btn">로그인</a>-->
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
 </body>
 </html>

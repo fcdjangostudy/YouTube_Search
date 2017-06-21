@@ -1,15 +1,42 @@
 {% extends 'common/base.html' %}
+{% load custom_tag %}
 
 {% block content %}
-	<!--4. post_list.html에서 for loop사용해 전달된 posts변수 순환 및 출력-->
-	<!--
-		include
-			https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#include
-	-->
-	{% for post in posts %}
-		<div>
-			<a href="{% url 'post:post_create' %}" class="btn">Post Create</a>
-		</div>
-		{% include 'include/post.html' with type='list' %}
-	{% endfor %}
+    <!--4. post_list.html에서 for loop사용해 전달된 posts변수 순환 및 출력-->
+    <!--
+        include
+            https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#include
+    -->
+    <div style="margin: 10px 0;">
+        <a href="{% url 'post:post_create' %}" class="btn">Post Create</a>
+    </div>
+
+    <div class="test">{{ request.GET | query_string }}</div>
+
+    <div class="test">
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+            {% if posts.has_previous %}
+                <button class="btn"><a href="{{ request.path }}?page=1">맨처음으로!</a></button>
+                <button class="btn"><a
+                        href="{{ request.path }}?page={{ posts.previous_page_number }}">이전 {{ posts.previous_page_number }}
+                    PAGE로!!</a></button>
+            {% endif %}
+
+            <span>현재 페이지 : {{ posts.number }} / {{ posts.paginator.num_pages }}</span>
+
+            {% if posts.has_next %}
+                <button class="btn"><a
+                        href="{{ request.path }}?page={{ posts.next_page_number }}">다음 {{ posts.next_page_number }}PAGE로!!</a>
+                </button>
+                <button class="btn"><a href="{{ request.path }}?page={{ posts.paginator.num_pages }}">맨마지막으로!</a>
+                </button>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {% for post in posts %}
+        {% include 'include/post.html' with type='list' %}
+    {% endfor %}
+
 {% endblock %}

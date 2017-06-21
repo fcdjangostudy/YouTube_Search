@@ -1,5 +1,13 @@
 <div class="post-comment" {% if style == 'red' %}style="color: red;"{% endif %}>
-  <a href="" class="comment-author">{{ comment.author }}</a>
-  <span class="comment-content">{{ comment.content }}</span>
-  <a href="" class="comment-tag"></a>
+    <a href="" class="comment-author">{{ comment.author }}</a>
+    <p class="comment-content">{{ comment.html_content |safe }}</p>
+    <a href="" class="comment-tag"></a>
+    {% if request.user == comment.author %}
+        <a href="{% url 'post:comment_modify' comment_pk=comment.pk %}?next={{ request.path }}#post-{{ comment.post.pk }}"
+           class="btn">수정</a>
+    {% endif %}
+    {% if request.user == comment.author %}
+        <a href="{% url 'post:comment_delete' comment_pk=comment.pk %}?next={{ request.path }}#post-{{ comment.post.pk }}"
+           class="btn">삭제</a>
+    {% endif %}
 </div>

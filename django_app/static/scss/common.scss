@@ -1,4 +1,5 @@
 @import 'variables';
+$color-tag : #003569;
 
 .btn {
   padding: 6px 12px;
@@ -9,6 +10,11 @@
   text-decoration: none;
   font-size: 11px;
 }
+
+.btn-xs  {
+  font-size: 10px;
+}
+
 .field-wrapper {
   margin-bottom: 10px;
   
@@ -38,4 +44,8 @@
 }
 form.form-inline {
   display: inline-block;
+}
+
+a.hash-tag {
+  color: $color-tag;
 }

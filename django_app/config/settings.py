@@ -57,7 +57,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# django_app/templates
+# django_app/templatetags
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 # django_app/static
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
@@ -89,6 +89,7 @@ INSTALLED_APPS = [
 
     'post',
     'member',
+    'utils',
 ]
 
 MIDDLEWARE = [
