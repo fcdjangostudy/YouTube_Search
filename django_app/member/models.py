@@ -1,5 +1,7 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.views.decorators.http import require_POST
 
 
 class User(AbstractUser):
@@ -52,6 +54,8 @@ class User(AbstractUser):
     def is_follower(self, user):
         return self.follower_relations.filter(from_user=user).exists()
 
+    @require_POST
+    @login_required
     def follow_toggle(self, user):
         created_relation, is_exist = self.follow_relations.get_or_create(to_user=user)
         if is_exist:
@@ -65,7 +69,6 @@ class User(AbstractUser):
         relations = self.follow_relations.all()
         return User.objects.filter(pk__in=relations.values('to_user_id'))
         # return [i.to_user for i in self.follow_relations.all()]
-
 
     @property
     def follower(self):
@@ -88,5 +91,3 @@ class Relation(models.Model):
         unique_together = (
             ('from_user', 'to_user'),
         )
-
-
