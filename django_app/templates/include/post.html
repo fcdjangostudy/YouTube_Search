@@ -1,68 +1,83 @@
 {% load static %}
 <article id="post-{{ post.pk }}" class="post">
-  <header>
-    <div class="post-header-left">
-      <img src="" alt="">
-      <span class="header-author">{{ post.author }}</span>
-    </div>
-    <div class="post-header-right">
-      
-    </div>
-  </header>
-  <div class="post-photo-container">
-    <!--
-    url태그를 사용해서 post:post_detail view로 이동하는 URL을 reverse
-    이때 post_pk라는 kwargs를 받으므로 post_pk key에 현재 post변수의 pk속성을 할당
-    -->
-    {% if type == 'list' %}
-    <a href="{% url 'post:post_detail' post_pk=post.pk %}">
-      <img src="{{ post.photo.url }}" alt="">
-    </a>
-    {% else %}
-    <img src="{{ post.photo.url }}" alt="">
-    {% endif %}
-  </div>
-  <div class="post-bottom">
-    <div class="post-btn-container clearfix">
-      <div class="btn-left">
-        <a href="#">
-        <img src="{% static 'images/post_heart.png' %}" alt="">
-      </a>
-        <a href="#">
-          <img src="{% static 'images/post_comment.png' %}" alt="">
-        </a>
-      </div>
-      <div class="btn-right">
-        {% if user == post.author %}
-        <a href="{% url 'post:post_modify' post_pk=post.pk %}" class="btn">수정하기</a>
-        <a href="{% url 'post:post_delete' post_pk=post.pk %}" class="btn">삭제하기</a>
-        {% endif %}
-      </div>
-    </div>
-    <p class="comment">좋아요 {{ post.like_count }}개</p>
-    <div class="post-comment-container">
-      <!--해당 post에 my_comment가 있을 경우 표시-->
-      {% if post.my_comment %}
-        <!--include한 post_comment내에서 'comment'라는 이름으로 쓸 변수에는 post.my_comment를 할당-->
-        {% include 'include/post_comment.html' with comment=post.my_comment style='red' %}
-      {% endif %}
+    <header>
+        <div class="post-header-left">
+            <img src="" alt="">
+            <span class="header-author">{{ post.author }}</span>
+        </div>
+        <div class="post-header-right">
 
-      <!--post에 연결된 Comment목록을 for문으로 순회하며 아래의 div.post-comment를 반복-->
-      {% for comment in post.comment_set.all %}
-        {% if comment != post.my_comment %}
-          <!--
-            include한 post_comment내에서 이미 'comment'라는 이름을 사용중이며
-            for문에서 사용하는 각 loop의 아이템 이름 'comment'와 일치
-          -->
-          {% include 'include/post_comment.html' %}
+        </div>
+    </header>
+    <div class="post-photo-container">
+        <!--
+        url태그를 사용해서 post:post_detail view로 이동하는 URL을 reverse
+        이때 post_pk라는 kwargs를 받으므로 post_pk key에 현재 post변수의 pk속성을 할당
+        -->
+        {% if type == 'list' %}
+            <a href="{% url 'post:post_detail' post_pk=post.pk %}">
+                <img src="{{ post.photo.url }}" alt="">
+            </a>
+        {% else %}
+            <img src="{{ post.photo.url }}" alt="">
         {% endif %}
-      {% endfor %}
     </div>
-    <p class="created">{{ post.created_date }}</p>
-    <form action="{% url 'post:comment_create' post_pk=post.pk %}?next={{ request.path }}#post-{{ post.pk }}" method="POST">
-        {% csrf_token %}
-{#      <input type="text" placeholder="댓글달기" class="input-comment">#}
-        {{ comment_form.content }}
-    </form>
-  </div>
+    <div class="post-bottom">
+        <div class="post-btn-container clearfix">
+            <div class="btn-left">
+                <form action="{% url 'post:post_like_toggle' post_pk=post.pk %}?next={{ request.path }}#post-{{ post.pk }}" method="POST" class="form-inline">
+                    {% csrf_token %}
+                    <button class="btn" type="submit">
+                        {% if user in post.like_users.all %}
+                            <img src="{% static 'images/icon_like_red.png' %}" alt="">
+                        {% else %}
+                            <img src="{% static 'images/post_heart.png' %}" alt="">
+                        {% endif %}
+                    </button>
+                </form>
+
+                </a>
+                <a href="#">
+                    <img src="{% static 'images/post_comment.png' %}" alt="">
+                </a>
+            </div>
+            <div class="btn-right">
+                {% if user == post.author %}
+                    <a href="{% url 'post:post_modify' post_pk=post.pk %}" class="btn">수정하기</a>
+                    <a href="{% url 'post:post_delete' post_pk=post.pk %}" class="btn">삭제하기</a>
+                {% endif %}
+            </div>
+        </div>
+        <p class="comment">좋아요 {{ post.like_count }}개</p>
+        {% if post.like_users.exists %}
+            <p class="comment">
+                <span>{{ post.like_users.all|join:', ' }}</span>님이 좋아합니다.
+            </p>
+        {% endif %}
+        <div class="post-comment-container">
+            <!--해당 post에 my_comment가 있을 경우 표시-->
+            {% if post.my_comment %}
+                <!--include한 post_comment내에서 'comment'라는 이름으로 쓸 변수에는 post.my_comment를 할당-->
+                {% include 'include/post_comment.html' with comment=post.my_comment style='red' %}
+            {% endif %}
+
+            <!--post에 연결된 Comment목록을 for문으로 순회하며 아래의 div.post-comment를 반복-->
+            {% for comment in post.comment_set.all %}
+                {% if comment != post.my_comment %}
+                    <!--
+                      include한 post_comment내에서 이미 'comment'라는 이름을 사용중이며
+                      for문에서 사용하는 각 loop의 아이템 이름 'comment'와 일치
+                    -->
+                    {% include 'include/post_comment.html' %}
+                {% endif %}
+            {% endfor %}
+        </div>
+        <p class="created">{{ post.created_date }}</p>
+        <form action="{% url 'post:comment_create' post_pk=post.pk %}?next={{ request.path }}#post-{{ post.pk }}"
+              method="POST">
+            {% csrf_token %}
+            {#      <input type="text" placeholder="댓글달기" class="input-comment">#}
+            {{ comment_form.content }}
+        </form>
+    </div>
 </article>

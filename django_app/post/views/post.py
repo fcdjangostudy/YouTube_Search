@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from ..decorators import post_owner
 from ..forms import PostForm
@@ -22,6 +23,7 @@ __all__ = (
     'post_modify',
     'post_delete',
     'hashtag_post_list',
+    'post_like_toggle',
 )
 
 
@@ -214,3 +216,22 @@ def hashtag_post_list(request, tag_name):
         'posts_count': posts_count,
     }
     return render(request, 'post/hashtag_post_list.html', context)
+
+
+@require_POST
+@login_required
+def post_like_toggle(request, post_pk):
+    post = get_object_or_404(Post, pk=post_pk)
+    user = request.user
+
+    # if user not in post.like_users:
+    post_like, post_like_created = post.postlike_set.get_or_create(user=user)
+
+    if not post_like_created:
+        post_like.delete()
+
+    next = request.GET.get('next')
+
+    if next:
+        return redirect(next)
+    return redirect('post:post_detail', post_pk=post_pk)
