@@ -63,14 +63,14 @@ class User(AbstractUser):
     @property
     def following(self):
         relations = self.follow_relations.all()
-        return User.objects.filter(pk__in=relations.values('pk'))
+        return User.objects.filter(pk__in=relations.values('to_user_id'))
         # return [i.to_user for i in self.follow_relations.all()]
 
 
     @property
     def follower(self):
         relations = self.follower_relations.all()
-        return User.objects.filter(pk__in=relations.values('pk'))
+        return User.objects.filter(pk__in=relations.values('from_user_id'))
 
 
 class Relation(models.Model):
@@ -88,3 +88,5 @@ class Relation(models.Model):
         unique_together = (
             ('from_user', 'to_user'),
         )
+
+

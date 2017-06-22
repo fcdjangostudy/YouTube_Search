@@ -2,8 +2,9 @@ from django.contrib.auth import \
     authenticate, \
     login as django_login, \
     logout as django_logout, get_user_model
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import LoginForm, SignupForm
 
@@ -120,3 +121,25 @@ def signup(request):
         'form': form,
     }
     return render(request, 'member/signup.html', context)
+
+
+def profile(request, user_pk=None):
+    if user_pk:
+        user = get_object_or_404(User, pk=user_pk)
+    else:
+        user = request.user  #자기 자신의 프로필을 보여줌
+
+    if request.method == 'POST':
+        request.user.follow_toggle(user)
+        redirect('member:profile', user_pk=user.pk)
+
+    context = {
+        'cur_user': user
+    }
+    return render(request, 'member/profile.html', context)
+
+
+
+
+
+
