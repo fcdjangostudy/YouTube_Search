@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.views.decorators.http import require_POST
 
+from utils.fields import CustomImageField
+
 
 class User(AbstractUser):
     '''
@@ -27,6 +29,10 @@ class User(AbstractUser):
         'self',
         through='Relation',
         symmetrical=False,
+    )
+    img_profile = CustomImageField(
+        upload_to='user',
+        blank=True,
     )
 
     def __str__(self):
@@ -74,6 +80,9 @@ class User(AbstractUser):
     def follower(self):
         relations = self.follower_relations.all()
         return User.objects.filter(pk__in=relations.values('from_user_id'))
+
+    def block_toggle(self, user):
+        pass
 
 
 class Relation(models.Model):

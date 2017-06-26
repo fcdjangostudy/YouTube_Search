@@ -3,6 +3,12 @@
 {% block content %}
     <div><h1>{{ cur_user }}의 프로필</h1></div>
     <div>
+        <h1>닉네임 : {{ cur_user.nickname }}</h1>
+    </div>
+    <div><img width="150" src="{{ cur_user.img_profile.url }}" alt=""></div>
+
+    <div><a class="btn" href="{% url 'member:my_profile_edit' %}">프로필 수정하기</a></div>
+    <div>
         <h2>{{ cur_user }}가 팔로워 하는 사람</h2>
         <ul>
             {% for u in cur_user.following %}
@@ -24,7 +30,7 @@
     </div>
     {% if user != cur_user %}
         <form action="{% url 'member:profile' user_pk=cur_user.pk %}" method="POST">
-        {% csrf_token %}
+            {% csrf_token %}
             {% if cur_user in user.following %}
                 <div>현재 유저 : {{ user }} 님은 {{ cur_user }}를 팔로우 하는 중입니다.</div>
                 <button type="submit">팔로우해제</button>
@@ -34,5 +40,24 @@
             {% endif %}
         </form>
     {% endif %}
+    <br>
+    <div>
+        <ul>
+            <h2><li style="display: inline-block; float: left;">게시물 {{ post_count }} 개</li></h2>
+            <h2><li style="display: inline-block; float: left;">팔로워 명</li></h2>
+            <h2><li style="display: inline-block; float: left;">팔로우 명</li></h2>
+        </ul>
+    </div>
+    <br>
+    <ul class="profile-photo-list">
+        {% for post in posts %}
+            <li style="display: inline-block; float: left; margin: 10px 10px;">
+                <a href="{% url 'post:post_detail' post_pk=post.pk %}"><img width="250px" height="auto" src="{{ post.photo.url }}" alt=""></a>
+            </li>
+        {% endfor %}
+    </ul>
 
+    {% if next_page %}
+        <a href="?page={{ request.GET.page|add:1 }}" class="btn">더 불러오기</a>
+    {% endif %}
 {% endblock %}

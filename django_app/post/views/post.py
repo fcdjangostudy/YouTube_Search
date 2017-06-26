@@ -44,15 +44,13 @@ def post_list(request):
     all_posts = Post.objects.all()
     paginator = Paginator(all_posts, 5)
     page = request.GET.get('page')
-    if page is None or page <= 1:
-        posts = Post.objects.filter(author=request.user).order_by('-created_date')
 
-    # try:
-    #     posts = paginator.page(page)
-    # except PageNotAnInteger:
-    #     posts = paginator.page(1)
-    # except EmptyPage:
-    #     posts = paginator.page(paginator.num_pages)
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
 
     context = {
         'posts': posts,
