@@ -1,3 +1,4 @@
+import re
 from pprint import pprint
 
 import requests
@@ -6,6 +7,9 @@ from django.contrib import messages
 from django.contrib.auth import \
     login as django_login, \
     logout as django_logout, get_user_model
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
+
 from django.shortcuts import render, redirect
 
 from ..forms import LoginForm, SignupForm
@@ -219,7 +223,7 @@ def facebook_login(request):
                 'name',
                 'first_name',
                 'last_name',
-                'picture',
+                'picture.type(large)',
                 'gender',
                 'email',
             ])
@@ -230,12 +234,19 @@ def facebook_login(request):
 
     if not code:
         return add_mesage_and_redirect_referer()
+
     try:
         access_token = get_access_token(code)
         debug_result = debug_token(access_token)
 
         user_info = get_user_info(user_id=debug_result['data']['user_id'], token=access_token)
+
         pprint(user_info)
+
+        user = User.objects.get_or_create_facebook_user(user_info)
+
+        django_login(request, user)
+        return redirect(request.META['HTTP_REFERER'])
 
     except GetAccessTokenException as e:
         pprint(e)

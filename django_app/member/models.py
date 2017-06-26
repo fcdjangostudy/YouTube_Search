@@ -1,12 +1,53 @@
+import re
+
+import requests
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager as DefaultUserManager
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.db import models
 from django.views.decorators.http import require_POST
 
 from utils.fields import CustomImageField
 
 
+class UserManager(DefaultUserManager):
+    def get_or_create_facebook_user(self, user_info):
+        username = '{}_{}_{}'.format(
+            self.model.USER_TYPE_FACEBOOK,
+            settings.FACEBOOK_APP_ID,
+            user_info['id'],
+        )
+        user, user_created = self.get_or_create(
+            user_type=self.model.USER_TYPE_FACEBOOK,
+            username=username,
+            defaults={
+                'last_name': user_info.get('last_name', ''),
+                'first_name': user_info.get('first_name', ''),
+                'email': user_info.get('email', ''),
+            }
+        )
+        if user_created:
+            url_picture = user_info['picture']['data']['url']
+
+            p = re.compile(r'.*\.([^?]+)')
+            file_ext = re.search(p, url_picture).group(1)
+            file_name = '{}.{}'.format(
+                user.pk,
+                file_ext,
+            )
+            temp_file = NamedTemporaryFile()
+            response = requests.get(url_picture)
+            temp_file.write(response.content)
+            user.img_profile.save(file_name, File(temp_file))
+
+        return user
+
+
 class User(AbstractUser):
+
+    objects = UserManager()
     '''
     동작
         follow : 내가 다른 사람을 follow함
@@ -23,6 +64,14 @@ class User(AbstractUser):
     following : 내가 follow하고 있는 사람들
     '''
     # 이 User모델을 AUTH_USER_MODEL로 사용하도록 settings.py에 설정
+    USER_TYPE_DJANGO = 'd'
+    USER_TYPE_FACEBOOK = 'f'
+    USER_TYPE_CHOICE = {
+        (USER_TYPE_DJANGO, 'django'),
+        (USER_TYPE_FACEBOOK, 'facebook'),
+    }
+
+    user_type = models.CharField(max_length=1, choices=USER_TYPE_CHOICE, default=USER_TYPE_DJANGO)
     nickname = models.CharField(max_length=24, null=True, unique=True)
 
     relations = models.ManyToManyField(
