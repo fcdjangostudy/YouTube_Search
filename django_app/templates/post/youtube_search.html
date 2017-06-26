@@ -10,11 +10,12 @@
     <br>
     <div><h3>SEARCH RESULT</h3></div>
     <ul>
-        {% for item in response.items %}
+        {% for video in videos %}
             <strong>{{ forloop.counter }}</strong>
-            <li><img src="{{ item.snippet.thumbnails.medium.url }}" alt="">
-                <a href="https://youtube.com/watch?v={{ item.id.videoId }}">링크</a>
+            <li><img src="{{ video.thumbnail.url }}" alt="">
+                <a href="https://youtube.com/watch?v={{ video.video_id }}">링크</a>
             </li>
+
         {% endfor %}
     </ul>
 {% endblock %}

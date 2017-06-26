@@ -98,3 +98,12 @@ class Tag(models.Model):
 
     def __str__(self):
         return 'Tag({})'.format(self.name)
+
+
+class Video(models.Model):
+    #  비디오아이디, 타이틀, 디스크립션, 썸네일 - 하이, 만든날짜
+    video_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    title = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField()
+    thumbnail = models.ImageField(upload_to='youtube', blank=True)
+    created_date = models.DateTimeField(blank=True, null=True)

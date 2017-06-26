@@ -40,7 +40,9 @@ urlpatterns = [
 
     url(r'^(?P<post_pk>\d+)/like-toggle/$', views.post_like_toggle, name='post_like_toggle'),
 
-    url(r'^youtube/search/$', views.youtube_search, name='youtube_search'),
+    # url(r'^youtube/search/$', views.youtube_search, name='youtube_search'),
+
+    url(r'^youtube/create/$', views.youtube_create_and_search, name='youtube_create_and_search'),
 
     # 위쪽의 결과들과 매칭되지 않을 경우
     url(r'^.*/$', views.post_anyway, name='post_anyway'),
