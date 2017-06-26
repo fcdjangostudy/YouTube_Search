@@ -1,0 +1,16 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+    <div><h1>프로필 수정하기</h1></div>
+
+    {#    <div><img src="{{ user.img_profile.url }}" alt=""></div>#}
+    <div>
+        <form action="{% url 'member:my_profile_edit' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% include 'include/field_set.html' %}
+            <button class="btn" type="submit">수정하기</button>
+        </form>
+    </div>
+    <div></div>
+    <div></div>
+{% endblock %}
