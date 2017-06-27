@@ -14,18 +14,24 @@
         url태그를 사용해서 post:post_detail view로 이동하는 URL을 reverse
         이때 post_pk라는 kwargs를 받으므로 post_pk key에 현재 post변수의 pk속성을 할당
         -->
-        {% if type == 'list' %}
-            <a href="{% url 'post:post_detail' post_pk=post.pk %}">
-                <img src="{{ post.photo.url }}" alt="">
-            </a>
+        {% if post.video.video_id %}
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ post.video.video_id }}" frameborder="0" allowfullscreen></iframe>
         {% else %}
-            <img src="{{ post.photo.url }}" alt="">
+            {% if type == 'list' %}
+                <a href="{% url 'post:post_detail' post_pk=post.pk %}">
+                    <img src="{{ post.photo.url }}" alt="">
+                </a>
+            {% else %}
+                <img src="{{ post.photo.url }}" alt="">
+            {% endif %}
         {% endif %}
+
     </div>
     <div class="post-bottom">
         <div class="post-btn-container clearfix">
             <div class="btn-left">
-                <form action="{% url 'post:post_like_toggle' post_pk=post.pk %}?next={{ request.path }}#post-{{ post.pk }}" method="POST" class="form-inline">
+                <form action="{% url 'post:post_like_toggle' post_pk=post.pk %}?next={{ request.path }}#post-{{ post.pk }}"
+                      method="POST" class="form-inline">
                     {% csrf_token %}
                     <button class="btn" type="submit">
                         {% if user in post.like_users.all %}

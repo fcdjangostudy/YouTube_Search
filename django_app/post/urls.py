@@ -44,6 +44,8 @@ urlpatterns = [
 
     url(r'^youtube/create/$', views.youtube_create_and_search, name='youtube_create_and_search'),
 
+    url(r'^youtube/video_post_create/(?P<video_pk>\d+)/$', views.video_post_create, name='video_post_create'),
+
     # 위쪽의 결과들과 매칭되지 않을 경우
     url(r'^.*/$', views.post_anyway, name='post_anyway'),
 ]

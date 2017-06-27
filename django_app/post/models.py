@@ -28,6 +28,12 @@ class Post(models.Model):
         related_name='like_posts',
         through='PostLike',
     )
+    video = models.OneToOneField(
+        'Video',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         ordering = ['-pk', ]

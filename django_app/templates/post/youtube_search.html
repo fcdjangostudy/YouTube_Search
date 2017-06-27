@@ -16,6 +16,10 @@
                 <a href="https://youtube.com/watch?v={{ video.video_id }}">링크</a>
             </li>
 
+            <form action="{% url 'post:video_post_create' video_pk=video.pk %}" method="POST">
+            {% csrf_token %}
+                <button type="submit">이 비디오로 포스트 생성하기</button>
+            </form>
         {% endfor %}
     </ul>
 {% endblock %}

@@ -5,12 +5,14 @@ import requests
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
+from ..forms import PostForm
 from ..models import Video
 
 __all__ = (
     'youtube_create_and_search',
+    'video_post_create',
 )
 
 
@@ -75,6 +77,20 @@ def youtube_create_and_search(request):
     return render(request, 'post/youtube_search.html', context)
 
 
+def video_post_create(request, video_pk):
+    if request.method == 'POST':
+        form = PostForm(data=request.POST)
+        if form.is_valid():
+            post = form.save(author=request.user)
+            post.video_id = video_pk
+            post.save()
+            return redirect('post:post_detail', post_pk=post.pk)
+    else:
+        form = PostForm()
+    context = {
+        'form': form,
+    }
+    return render(request, 'post/post_create.html', context)
 # def youtube_search(request, ):
 #     url_api_search = 'https://www.googleapis.com/youtube/v3/search'
 #     q = request.GET.get('q')

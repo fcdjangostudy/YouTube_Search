@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from ..decorators import post_owner
-from ..forms import PostForm
+from ..forms import PostImageForm
 from ..forms.comment import CommentForm
 from ..models import Post, Tag
 
@@ -109,7 +109,7 @@ def post_detail(request, post_pk):
 def post_create(request):
     # POST요청을 받아 Post객체를 생성 후 post_list페이지로 redirect
     if request.method == 'POST':
-        ### PostForm을 쓰지 않은경우
+        ###PostImageForm을 쓰지 않은경우
         # # get_user_model을 이용해서 얻은 User클래스(Django에서 인증에 사용하는 유저모델)에서 임의의 유저 한명을 가져온다.
         # user = User.objects.first()
         # # 새 Post객체를 생성하고 DB에 저장
@@ -140,14 +140,14 @@ def post_create(request):
         #     #     author=user,
         #     #     content=comment_string,
         #     # )
-        form = PostForm(data=request.POST, files=request.FILES)
+        form =PostImageForm(data=request.POST, files=request.FILES)
         if form.is_valid():
             # ModelForm의 save()메서드를 사용해서 Post객체를 가져옴
             post = form.save(author=request.user)
             return redirect('post:post_detail', post_pk=post.pk)
     else:
         # post/post_create.html을 render해서 리턴
-        form = PostForm()
+        form =PostImageForm()
     context = {
         'form': form,
     }
@@ -161,12 +161,12 @@ def post_modify(request, post_pk):
     post = Post.objects.get(pk=post_pk)
 
     if request.method == 'POST':
-        form = PostForm(data=request.POST, files=request.FILES, instance=post)
+        form =PostImageForm(data=request.POST, files=request.FILES, instance=post)
         if form.is_valid():
             form.save()
             return redirect('post:post_detail', post_pk=post.pk)
     else:
-        form = PostForm(instance=post)
+        form =PostImageForm(instance=post)
     context = {
         'form': form,
     }

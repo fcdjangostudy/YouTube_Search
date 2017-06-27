@@ -13,7 +13,6 @@ class PostForm(forms.ModelForm):
     #   Form을 사용할때는 반드시 photo를 받도록 함
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['photo'].required = True
         if self.instance.my_comment:
             self.fields['comment'].initial = self.instance.my_comment.content
 
@@ -25,7 +24,6 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = (
-            'photo',
             'comment',
         )
 
@@ -64,3 +62,16 @@ class PostForm(forms.ModelForm):
             instance.save()
         # ModelForm의 save()에서 반환해야 하는 model의 instance리턴
         return instance
+
+
+class PostImageForm(PostForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['photo'].required = True
+
+    class Meta:
+        model = Post
+        fields = (
+            'photo',
+            'comment',
+         )
